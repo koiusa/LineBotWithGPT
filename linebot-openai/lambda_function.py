@@ -4,6 +4,7 @@ import logging
 import openai
 import status
 import behavior
+import guard
 
 from linebot import (LineBotApi, WebhookHandler)
 from linebot.models import (
@@ -35,10 +36,9 @@ handler = WebhookHandler(channel_secret)
 
 
 def lambda_handler(event, context):
-
-    # 認証用のx-line-signatureヘッダー
-    signature = event["headers"]["x-line-signature"]
-    body = event["body"]
+    authorizer = guard.authorizer()
+    if not authorizer.request(event):
+        return status.const.forbidden_json
 
     @handler.add(MessageEvent, message=(TextMessage, StickerMessage, ImageMessage))
     def message(line_event):
@@ -48,7 +48,7 @@ def lambda_handler(event, context):
 
 # 例外処理としての動作
     try:
-        handler.handle(body, signature)
+        handler.handle(authorizer.body, authorizer.signature)
     except LineBotApiError as e:
         logger.error("Got exception from LINE Messaging API: %s\n" % e.message)
         for m in e.error.details:

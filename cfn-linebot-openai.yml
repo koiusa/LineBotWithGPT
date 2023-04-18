@@ -41,7 +41,7 @@ Parameters:
     Default: "300"
   TagsName:
     Type: String
-    Default: "inamura"
+    Default: "koiusa"
 # ------------------------------------------------------------#
 #  Resources
 # ------------------------------------------------------------#

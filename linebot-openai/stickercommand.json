@@ -1,22 +1,60 @@
 {
 	"command": [
 		{
-			"name": "setting",
+			"name": "prompt",
+			"caption": "直後のメッセージでAIの役割を設定します。",
+			"type": "receive",
 			"package_id": 1,
 			"sticker_id": 4,
 			"action_id": 1
 		},
 		{
 			"name": "status",
+			"caption": "現在のチャンネルの状態を表示します。",
+			"type": "reactive",
 			"package_id": 1,
 			"sticker_id": 2,
 			"action_id": 2
 		},
 		{
-			"name": "info",
+			"name": "delete_histoly",
+			"caption": "現在のチャンネルの会話履歴を削除をします。(y/N)",
+			"type": "receive",
 			"package_id": 1,
 			"sticker_id": 10,
 			"action_id": 3
+		},
+		{
+			"name": "memory",
+			"caption": "直後のメッセージで会話履歴の記憶数を設定します。（最大10）",
+			"type": "receive",
+			"package_id": 1,
+			"sticker_id": 13,
+			"action_id": 4
+		},
+		{
+			"name": "delete_prompt",
+			"caption": "現在のチャンネルのAIの役割を削除をします。(y/N)",
+			"type": "receive",
+			"package_id": 1,
+			"sticker_id": 17,
+			"action_id": 5
+		},
+		{
+			"name": "ignore_channels",
+			"caption": "直後のメッセージで操作対象のチャンネルを削除します。(リスト番号：対象)",
+			"type": "receive",
+			"package_id": 1,
+			"sticker_id": 401,
+			"action_id": 6
+		},
+		{
+			"name": "aim_channels",
+			"caption": "直後のメッセージで操作対象のチャンネルを設定します。(リスト番号：対象)",
+			"type": "receive",
+			"package_id": 1,
+			"sticker_id": 402,
+			"action_id": 7
 		}
 	]
 }
