@@ -1,0 +1,144 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'HTTP API'
+# ------------------------------------------------------------#
+#  Metadata
+# ------------------------------------------------------------#
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: "Lambda Configuration"
+        Parameters:
+        - FunctionName
+        - Description
+        - Handler
+        - MemorySize
+        - Runtime
+        - Timeout
+        - TagsName
+
+# ------------------------------------------------------------#
+#  InputParameters
+# ------------------------------------------------------------#
+Parameters:
+  FunctionName:
+    Type: String
+    Default: "cfn-linebot-chatgpt"
+  Description:
+    Type: String
+    Default: "cfn-linebot-chatgpt"
+  Handler:
+    Type: String
+    Default: "lambda_function.lambda_handler"
+  MemorySize:
+    Type: String
+    Default: "128"
+  Runtime:
+    Type: String
+    Default: "python3.9"
+  Timeout:
+    Type: String
+    Default: "300"
+  TagsName:
+    Type: String
+    Default: "inamura"
+# ------------------------------------------------------------#
+#  Resources
+# ------------------------------------------------------------#
+Resources:
+# ------------------------------------------------------------#
+#  Role Lambda
+# ------------------------------------------------------------#
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${FunctionName}-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action: "sts:AssumeRole"
+            Principal:
+              Service: lambda.amazonaws.com
+      Policies:
+        - PolicyName: !Sub "${FunctionName}-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "logs:CreateLogGroup"
+                Resource: !Sub "arn:${AWS::Partition}:logs:*:*:*"
+# ------------------------------------------------------------#
+#  Lambda
+# ------------------------------------------------------------#
+  Lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: !Ref Description
+      Code:
+        ZipFile: |
+            import json
+
+            def lambda_handler(event, context):
+            # TODO implement
+                return {
+                    'statusCode': 200,
+                    'body': json.dumps('Hello from Lambda!')
+                }
+      Environment:
+        Variables:
+          LINE_CHANNEL_ACCESS_TOKEN: XXXXXXXXXX
+          LINE_CHANNEL_SECRET: YYYYYYYYYY
+          OPENAI_API_KEY: ZZZZZZZZZZ
+      FunctionName: !Sub "${FunctionName}-lmd"
+      Handler: !Ref Handler 
+      MemorySize: !Ref MemorySize
+      Runtime: !Ref Runtime
+      Timeout: !Ref Timeout
+      Role: !GetAtt LambdaRole.Arn
+      Tags:
+        - Key: "User"
+          Value: !Ref TagsName
+
+# ------------------------------------------------------------#
+#  APIGateway
+# ------------------------------------------------------------#
+  HttpApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub "${FunctionName}-apigateway"
+      ProtocolType: HTTP
+
+  HttpApiLinebotStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref HttpApi
+      StageName: "linebot"
+      AutoDeploy: true
+
+  HttpApiChappieIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt Lambda.Arn
+      PayloadFormatVersion: '2.0'
+
+  HttpApiChappieIntegrationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt Lambda.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/*/chatgpt"
+
+  HttpApiChappieRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref HttpApi
+      RouteKey: ANY /chatgpt
+      AuthorizationType: NONE
+      Target: !Sub "integrations/${HttpApiChappieIntegration}"

@@ -1,0 +1,22 @@
+{
+	"command": [
+		{
+			"name": "setting",
+			"package_id": 1,
+			"sticker_id": 4,
+			"action_id": 1
+		},
+		{
+			"name": "status",
+			"package_id": 1,
+			"sticker_id": 2,
+			"action_id": 2
+		},
+		{
+			"name": "info",
+			"package_id": 1,
+			"sticker_id": 10,
+			"action_id": 3
+		}
+	]
+}
