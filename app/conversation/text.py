@@ -1,6 +1,6 @@
 import openai
 from database.channel import channel
-from database.histoly import histoly
+from database.histoly_postgres import HistolyPostgres
 from linebot.models import (TextSendMessage)
 from common.context import eventcontext
 
@@ -15,7 +15,7 @@ class textresponce:
     def __init__(self, event_context: eventcontext):
         self.event_context = event_context
         self.channel = channel(self.event_context)
-        self.histoly = histoly(self.event_context)
+        self.histoly = HistolyPostgres(self.event_context)
 
     def get_message(self):
         self.targets = self.channel.get_target_channels()
@@ -156,7 +156,7 @@ class textresponce:
         prompt = self.histoly.to_prompt(
             conversation, self.current.get("prompt"))
         completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4.1-turbo",
             messages=prompt
         )
         # 受信したテキストをCloudWatchLogsに出力する
