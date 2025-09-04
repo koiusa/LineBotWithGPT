@@ -1,4 +1,5 @@
 import openai
+import const
 from database.channel import channel
 from database.histoly_postgres import HistolyPostgres
 from linebot.models import (TextSendMessage)
@@ -156,7 +157,7 @@ class textresponce:
         prompt = self.histoly.to_prompt(
             conversation, self.current.get("prompt"))
         completion = openai.ChatCompletion.create(
-            model="gpt-4.1-turbo",
+            model=const.OPENAI_MODEL,
             messages=prompt
         )
         # 受信したテキストをCloudWatchLogsに出力する

@@ -16,3 +16,6 @@ class _const:
 
 
 sys.modules[__name__] = _const()
+
+# OpenAIモデル名（環境や用途に応じて変更可能）
+OPENAI_MODEL = "gpt-4.1-turbo"
