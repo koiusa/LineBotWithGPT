@@ -133,3 +133,22 @@ linebot-*.zip
 
 # Database
 db/
+
+# Frontend (React/Node.js)
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.DS_Store
+frontend/.vscode/
+frontend/coverage/
+frontend/.nyc_output/
+frontend/package-lock.json
+frontend/yarn.lock
+frontend/.eslintcache
