@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const ChannelManager = () => {
   const [channels, setChannels] = useState([]);
@@ -14,33 +15,34 @@ const ChannelManager = () => {
     try {
       setLoading(true);
       // API実装後に有効化
-      // const response = await axios.get('/api/channels');
-      // setChannels(response.data);
+      const response = await axios.get('/api/channels');
+      setChannels(Array.isArray(response.data.channels) ? response.data.channels : []);
+      setLoading(false);
       
       // ダミーデータ（開発用）
-      setTimeout(() => {
-        setChannels([
-          {
-            id: '1',
-            channelId: 'C1234567890',
-            type: 'group',
-            prompt: 'あなたは親しみやすいアシスタントです。',
-            memory: 5,
-            setting: { active: true },
-            timestamp: '2024-01-15 10:30:00'
-          },
-          {
-            id: '2',
-            channelId: 'U0987654321',
-            type: 'user',
-            prompt: 'プログラミングに関する質問に答えてください。',
-            memory: 10,
-            setting: { active: true },
-            timestamp: '2024-01-14 15:45:00'
-          }
-        ]);
-        setLoading(false);
-      }, 1000);
+    //   setTimeout(() => {
+    //     setChannels([
+    //       {
+    //         id: '1',
+    //         channelId: 'C1234567890',
+    //         type: 'group',
+    //         prompt: 'あなたは親しみやすいアシスタントです。',
+    //         memory: 5,
+    //         setting: { active: true },
+    //         timestamp: '2024-01-15 10:30:00'
+    //       },
+    //       {
+    //         id: '2',
+    //         channelId: 'U0987654321',
+    //         type: 'user',
+    //         prompt: 'プログラミングに関する質問に答えてください。',
+    //         memory: 10,
+    //         setting: { active: true },
+    //         timestamp: '2024-01-14 15:45:00'
+    //       }
+    //     ]);
+    //     setLoading(false);
+    //   }, 1000);
     } catch (err) {
       setError('チャンネル情報の取得に失敗しました');
       setLoading(false);
@@ -50,14 +52,14 @@ const ChannelManager = () => {
   const updateChannel = async (channelId, updates) => {
     try {
       // API実装後に有効化
-      // await axios.put(`/api/channels/${channelId}`, updates);
+      await axios.put(`/api/channels/${channelId}`, updates);
       
       // ダミーレスポンス（開発用）
-      setChannels(channels.map(channel => 
-        channel.channelId === channelId 
-          ? { ...channel, ...updates }
-          : channel
-      ));
+    //   setChannels(channels.map(channel => 
+    //     channel.channelId === channelId 
+    //       ? { ...channel, ...updates }
+    //       : channel
+    //   ));
       setEditingChannel(null);
     } catch (err) {
       setError('チャンネル情報の更新に失敗しました');
@@ -69,10 +71,10 @@ const ChannelManager = () => {
     
     try {
       // API実装後に有効化
-      // await axios.delete(`/api/channels/${channelId}`);
+      await axios.delete(`/api/channels/${channelId}`);
       
       // ダミーレスポンス（開発用）
-      setChannels(channels.filter(channel => channel.channelId !== channelId));
+    //   setChannels(channels.filter(channel => channel.channelId !== channelId));
     } catch (err) {
       setError('チャンネルの削除に失敗しました');
     }

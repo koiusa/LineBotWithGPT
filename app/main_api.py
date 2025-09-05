@@ -1,28 +1,3 @@
-def lambda_handler(event, context):
-    authorizer = guard.authorizer()
-    if not authorizer.request(event):
-        return status.const.forbidden_json
-
-    @handler.add(MessageEvent, message=(TextMessage, StickerMessage, ImageMessage))
-    def message(line_event):
-        eventcontext = behavior.eventcontext(
-            event=line_event, linebot=line_bot_api)
-        behavior.completion.reply(event_context=eventcontext)
-
-# 例外処理としての動作
-    try:
-        handler.handle(authorizer.body, authorizer.signature)
-    except LineBotApiError as e:
-        logger.error("Got exception from LINE Messaging API: %s\n" % e.message)
-        for m in e.error.details:
-            logger.error("  %s: %s" % (m.property, m.message))
-        return status.const.error_json
-    except InvalidSignatureError:
-        return status.const.error_json
-
-    return status.const.ok_json
-
-# --- Flaskサーバー型に変更 ---
 import os
 import sys
 import logging
@@ -63,8 +38,8 @@ def message(line_event):
 @app.route("/callback", methods=['POST'])
 def callback():
     # 署名検証
-    if not verify_line_signature(request):
-        abort(400)
+    # if not verify_line_signature(request):
+    #     abort(400)
     signature = request.headers.get('X-Line-Signature')
     body = request.get_data(as_text=True)
     try:

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const HistoryViewer = () => {
   const [channels, setChannels] = useState([]);
@@ -14,14 +15,14 @@ const HistoryViewer = () => {
   const fetchChannels = async () => {
     try {
       // API実装後に有効化
-      // const response = await axios.get('/api/channels');
-      // setChannels(response.data);
+      const response = await axios.get('/api/channels');
+      setChannels(Array.isArray(response.data.channels) ? response.data.channels : []);
       
       // ダミーデータ（開発用）
-      setChannels([
-        { channelId: 'C1234567890', type: 'group' },
-        { channelId: 'U0987654321', type: 'user' }
-      ]);
+    //   setChannels([
+    //     { channelId: 'C1234567890', type: 'group' },
+    //     { channelId: 'U0987654321', type: 'user' }
+    //   ]);
     } catch (err) {
       setError('チャンネル一覧の取得に失敗しました');
     }
@@ -35,39 +36,39 @@ const HistoryViewer = () => {
       setError(null);
       
       // API実装後に有効化
-      // const response = await axios.get(`/api/history/${channelId}`);
-      // setHistory(response.data);
-      
+      const response = await axios.get(`/api/history/${channelId}`);
+      setHistory(response.data);
+      setLoading(false);
       // ダミーデータ（開発用）
-      setTimeout(() => {
-        setHistory([
-          {
-            id: '1',
-            userId: 'U123',
-            message: 'こんにちは！',
-            timestamp: '2024-01-15 10:30:15'
-          },
-          {
-            id: '2',
-            userId: 'bot',
-            message: 'こんにちは！何かお手伝いできることはありますか？',
-            timestamp: '2024-01-15 10:30:18'
-          },
-          {
-            id: '3',
-            userId: 'U123',
-            message: 'Pythonについて教えてください',
-            timestamp: '2024-01-15 10:31:00'
-          },
-          {
-            id: '4',
-            userId: 'bot',
-            message: 'Pythonは、シンプルで読みやすい構文が特徴のプログラミング言語です。データサイエンス、ウェブ開発、自動化など様々な分野で使われています。',
-            timestamp: '2024-01-15 10:31:05'
-          }
-        ]);
-        setLoading(false);
-      }, 1000);
+    //   setTimeout(() => {
+    //     setHistory([
+    //       {
+    //         id: '1',
+    //         userId: 'U123',
+    //         message: 'こんにちは！',
+    //         timestamp: '2024-01-15 10:30:15'
+    //       },
+    //       {
+    //         id: '2',
+    //         userId: 'bot',
+    //         message: 'こんにちは！何かお手伝いできることはありますか？',
+    //         timestamp: '2024-01-15 10:30:18'
+    //       },
+    //       {
+    //         id: '3',
+    //         userId: 'U123',
+    //         message: 'Pythonについて教えてください',
+    //         timestamp: '2024-01-15 10:31:00'
+    //       },
+    //       {
+    //         id: '4',
+    //         userId: 'bot',
+    //         message: 'Pythonは、シンプルで読みやすい構文が特徴のプログラミング言語です。データサイエンス、ウェブ開発、自動化など様々な分野で使われています。',
+    //         timestamp: '2024-01-15 10:31:05'
+    //       }
+    //     ]);
+    //     setLoading(false);
+    //   }, 1000);
     } catch (err) {
       setError('会話履歴の取得に失敗しました');
       setLoading(false);
@@ -79,10 +80,10 @@ const HistoryViewer = () => {
     
     try {
       // API実装後に有効化
-      // await axios.delete(`/api/history/${channelId}`);
+      await axios.delete(`/api/history/${channelId}`);
       
       // ダミーレスポンス（開発用）
-      setHistory([]);
+    //   setHistory([]);
       alert('会話履歴を削除しました');
     } catch (err) {
       setError('会話履歴の削除に失敗しました');

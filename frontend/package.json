@@ -37,6 +37,6 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://linebot-gpt-servername:18000",
+  "proxy": "http://linebot-gpt-admin:8001",
   "homepage": "."
 }

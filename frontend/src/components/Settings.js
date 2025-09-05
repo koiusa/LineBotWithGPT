@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Settings = () => {
   const [settings, setSettings] = useState({
@@ -7,31 +8,43 @@ const Settings = () => {
     maxMemory: 10,
     systemPrompt: ''
   });
+  const [stickerCommands, setStickerCommands] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     fetchSettings();
+    fetchStickerCommands();
   }, []);
+
+  const fetchStickerCommands = async () => {
+    try {
+      // API実装後に有効化
+      const response = await axios.get('/api/stickercommands');
+      setStickerCommands(response.data.command || []);
+    } catch (err) {
+      setStickerCommands([]);
+    }
+  };
 
   const fetchSettings = async () => {
     try {
       setLoading(true);
       // API実装後に有効化
-      // const response = await axios.get('/api/settings');
-      // setSettings(response.data);
-      
+      const response = await axios.get('/api/settings');
+      setSettings(response.data);
+      setLoading(false);
       // ダミーデータ（開発用）
-      setTimeout(() => {
-        setSettings({
-          openaiModel: 'gpt-4.1-turbo',
-          defaultMemory: 5,
-          maxMemory: 10,
-          systemPrompt: 'あなたは親しみやすいアシスタントです。'
-        });
-        setLoading(false);
-      }, 500);
+    //   setTimeout(() => {
+    //     setSettings({
+    //       openaiModel: 'gpt-4.1-turbo',
+    //       defaultMemory: 5,
+    //       maxMemory: 10,
+    //       systemPrompt: 'あなたは親しみやすいアシスタントです。'
+    //     });
+    //     setLoading(false);
+    //   }, 500);
     } catch (err) {
       setError('設定の取得に失敗しました');
       setLoading(false);
@@ -46,14 +59,15 @@ const Settings = () => {
 
     try {
       // API実装後に有効化
-      // await axios.put('/api/settings', settings);
-      
+      await axios.put('/api/settings', settings);
+      setSuccess(true);
+      setLoading(false);
       // ダミーレスポンス（開発用）
-      setTimeout(() => {
-        setSuccess(true);
-        setLoading(false);
-        setTimeout(() => setSuccess(false), 4000);
-      }, 500);
+    //   setTimeout(() => {
+    //     setSuccess(true);
+    //     setLoading(false);
+    //     setTimeout(() => setSuccess(false), 4000);
+    //   }, 500);
     } catch (err) {
       setError('設定の保存に失敗しました');
       setLoading(false);
@@ -66,13 +80,16 @@ const Settings = () => {
 
     try {
       // API実装後に有効化
-      // const response = await axios.post('/api/test-connection');
-      
+      const response = await axios.post('/api/test-connection');
+      setLoading(false);
+      alert('OpenAI APIへの接続テストが成功しました');
+      setLoading(false);
+
       // ダミーレスポンス（開発用）
-      setTimeout(() => {
-        alert('OpenAI APIへの接続テストが成功しました');
-        setLoading(false);
-      }, 1000);
+      // setTimeout(() => {
+      //   alert('OpenAI APIへの接続テストが成功しました');
+      //   setLoading(false);
+      // }, 1000);
     } catch (err) {
       setError('接続テストに失敗しました');
       setLoading(false);
@@ -171,46 +188,32 @@ const Settings = () => {
 
         <div className="card">
           <h3>ステッカーコマンド設定</h3>
-          
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ backgroundColor: '#f8f9fa' }}>
                   <th style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'left' }}>コマンド</th>
+                  <th style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'left' }}>説明</th>
+                  <th style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'left' }}>タイプ</th>
                   <th style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'left' }}>パッケージID</th>
                   <th style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'left' }}>ステッカーID</th>
-                  <th style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'left' }}>アクション</th>
+                  <th style={{ padding: '10px', border: '1px solid #ddd', textAlign: 'left' }}>アクションID</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>prompt</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>1</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>4</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>1</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>status</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>1</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>2</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>2</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>delete_histoly</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>1</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>10</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>3</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>memory</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>1</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>13</td>
-                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>4</td>
-                </tr>
+                {stickerCommands.map(cmd => (
+                  <tr key={cmd.name}>
+                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{cmd.name}</td>
+                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{cmd.caption}</td>
+                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{cmd.type}</td>
+                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{cmd.package_id}</td>
+                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{cmd.sticker_id}</td>
+                    <td style={{ padding: '10px', border: '1px solid #ddd' }}>{cmd.action_id}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-          
           <p style={{ marginTop: '15px', color: '#666', fontSize: '14px' }}>
             ステッカーコマンドの設定はstickercommand.jsonファイルで管理されています。
           </p>

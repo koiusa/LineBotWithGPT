@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -8,27 +9,38 @@ const Dashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [stickerCommands, setStickerCommands] = useState([]);
 
   useEffect(() => {
     fetchStats();
+    fetchStickerCommands();
   }, []);
+  const fetchStickerCommands = async () => {
+    try {
+      const response = await axios.get('/api/stickercommands');
+      setStickerCommands(response.data.command || []);
+    } catch (err) {
+      setStickerCommands([]);
+    }
+  };
 
   const fetchStats = async () => {
     try {
       setLoading(true);
       // API実装後に有効化
-      // const response = await axios.get('/api/stats');
-      // setStats(response.data);
+      const response = await axios.get('/api/stats');
+      setStats(response.data);
+      setLoading(false);
       
       // ダミーデータ（開発用）
-      setTimeout(() => {
-        setStats({
-          totalChannels: 5,
-          totalMessages: 150,
-          activeChannels: 3
-        });
-        setLoading(false);
-      }, 1000);
+    //   setTimeout(() => {
+    //     setStats({
+    //       totalChannels: 5,
+    //       totalMessages: 150,
+    //       activeChannels: 3
+    //     });
+    //     setLoading(false);
+    //   }, 1000);
     } catch (err) {
       setError('統計データの取得に失敗しました');
       setLoading(false);
@@ -92,26 +104,13 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>prompt</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>AIの役割を設定</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>receive</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>status</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>チャンネル状態表示</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>reactive</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>delete_histoly</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>会話履歴削除</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>receive</td>
-              </tr>
-              <tr>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>memory</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>記憶数設定</td>
-                <td style={{ padding: '10px', border: '1px solid #ddd' }}>receive</td>
-              </tr>
+              {stickerCommands.map(cmd => (
+                <tr key={cmd.name}>
+                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>{cmd.name}</td>
+                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>{cmd.caption}</td>
+                  <td style={{ padding: '10px', border: '1px solid #ddd' }}>{cmd.type}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

@@ -16,11 +16,24 @@ services:
     env_file:
       - .env
     depends_on:
-        - linebot-gpt-db
+      - linebot-gpt-db
     ports:
       - "18000:8000"
     tty: true
     restart: unless-stopped
+  
+  linebot-gpt-admin:
+    build: ./app
+    container_name: linebot-gpt-admin
+    env_file:
+      - .env
+    depends_on:
+      - linebot-gpt-db
+    ports:
+      - "18001:8001"
+    restart: unless-stopped
+    environment:
+      - API_MODE=admin
 
   linebot-gpt-frontend:
     build:
@@ -31,17 +44,5 @@ services:
       - "13000:3000"
     depends_on:
       - linebot-gpt
-    restart: unless-stopped
-  
-  linebot-gpt-admin:
-    build: ./app
-    container_name: linebot-gpt-admin
-    command: gunicorn --bind 0.0.0.0:8001 admin_api:app
-    env_file:
-      - .env
-    depends_on:
-      - linebot-gpt-db
-    ports:
-      - "18001:8001"
     restart: unless-stopped
 
