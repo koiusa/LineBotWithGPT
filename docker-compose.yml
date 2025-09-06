@@ -38,11 +38,28 @@ services:
   linebot-gpt-frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
     container_name: linebot-gpt-frontend
     ports:
       - "13000:3000"
     depends_on:
       - linebot-gpt
     restart: unless-stopped
+    env_file:
+      - ./frontend/.env
+    volumes:
+      - ./frontend/certs:/app/certs
+
+  linebot-gpt-keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: linebot-gpt-keycloak
+    env_file:
+      - .env
+    ports:
+      - "9999:8080"
+    command: start-dev
+    restart: unless-stopped
+    depends_on:
+      - linebot-gpt-db
+
+
 

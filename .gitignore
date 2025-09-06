@@ -152,3 +152,5 @@ frontend/.nyc_output/
 frontend/package-lock.json
 frontend/yarn.lock
 frontend/.eslintcache
+# Certificates
+frontend/certs/
