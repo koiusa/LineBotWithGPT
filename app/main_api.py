@@ -1,7 +1,6 @@
 import os
 import sys
 import logging
-import openai
 import status
 import behavior
 import guard
@@ -17,7 +16,6 @@ logger.setLevel(logging.ERROR)
 
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 if channel_secret is None:
     logger.error('Specify LINE_CHANNEL_SECRET as environment variable.')

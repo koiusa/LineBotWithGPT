@@ -16,11 +16,14 @@ def create_channel_table():
     CREATE TABLE IF NOT EXISTS linebot_chatgpt_channel (
         id UUID PRIMARY KEY,
         channelid VARCHAR(255),
+        userid VARCHAR(128),
         type VARCHAR(32),
+        actionid INTEGER,
         prompt TEXT,
         memory INTEGER,
-        setting JSONB,
-        timestamp TIMESTAMP
+        setting BOOLEAN,
+        timestamp TIMESTAMP,
+        create_datetime TIMESTAMP
     );
     '''
     conn = get_pg_connection()

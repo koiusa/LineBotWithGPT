@@ -103,7 +103,7 @@ def get_channels():
                 'type': row[2],
                 'prompt': row[3],
                 'memory': row[4],
-                'setting': row[5] if row[5] else {'active': True},
+                'setting': row[5],
                 'timestamp': str(row[6])
             })
         

@@ -55,7 +55,7 @@ class HistolyPostgres:
             result = []
             for r in rows[-count:]:
                 result.append({
-                    "userId": r[0],
+                    "userid": r[0],
                     "message": r[1],
                     "timestamp": r[2]
                 })
@@ -66,9 +66,9 @@ class HistolyPostgres:
         if system is not None:
             messages.append({"role": "system", "content": system})
         for record in conversation:
-            if record[0] == "bot":
-                messages.append({"role": "assistant", "content": record[1]})
+            if record["userid"] == "bot":
+                messages.append({"role": "assistant", "content": record["message"]})
             else:
-                messages.append({"role": "user", "content": record[1]})
+                messages.append({"role": "user", "content": record["message"]})
         print(messages)
         return messages

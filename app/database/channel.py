@@ -11,6 +11,7 @@ def get_pg_connection():
     )
 import logging
 import datetime
+import uuid
 from database.primary import primary
 from common.context import eventcontext
 
@@ -30,8 +31,8 @@ class channel:
 
     def to_item(self, record):
         return {
-            'channelId': record.get('channelId'),
-            'userId': record.get('userId'),
+            'channelid': record.get('channelid'),
+            'userid': record.get('userid'),
             'type': record.get('type'),
             'actionid': record.get('actionid'),
             'memory': record.get('memory'),
@@ -51,7 +52,7 @@ class channel:
         cur = conn.cursor()
         cur.execute(f"""
             SELECT * FROM {self.tableName}
-            WHERE channelId = %s AND userId = %s
+            WHERE channelid = %s AND userid = %s
         """, (channelid, self.primary.get_userid()))
         row = cur.fetchone()
         if row:
@@ -59,9 +60,11 @@ class channel:
             item = dict(zip(columns, row))
         else:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+            new_id = str(uuid.uuid4())
             item = {
-                'channelId': channelid,
-                'userId': self.primary.get_userid(),
+                'id': new_id,
+                'channelid': channelid,
+                'userid': self.primary.get_userid(),
                 'type': self.primary.get_type(),
                 'actionid': 0,
                 'memory': 0,
@@ -71,9 +74,9 @@ class channel:
                 'create_datetime': timestamp,
             }
             cur.execute(f"""
-                INSERT INTO {self.tableName} (channelId, userId, type, actionid, memory, prompt, setting, timestamp, create_datetime)
-                VALUES (%(channelId)s, %(userId)s, %(type)s, %(actionid)s, %(memory)s, %(prompt)s, %(setting)s, %(timestamp)s, %(create_datetime)s)
-            """, item)
+                INSERT INTO {self.tableName} (id, channelid, userid, type, actionid, memory, prompt, setting, timestamp, create_datetime)
+                VALUES (%(id)s, %(channelid)s, %(userid)s, %(type)s, %(actionid)s, %(memory)s, %(prompt)s, %(setting)s, %(timestamp)s, %(create_datetime)s)
+            """, (item))
             conn.commit()
         cur.close()
         conn.close()
@@ -84,13 +87,13 @@ class channel:
         self.add_action_ref(self.primary.get_channelid(), actionid)
 
     # 指定チャンネルID・ユーザーIDのactionidを更新
-    def add_action_ref(self, channelId, actionid):
+    def add_action_ref(self, channelid, actionid):
         conn = get_pg_connection()
         cur = conn.cursor()
         cur.execute(f"""
             UPDATE {self.tableName} SET actionid = %s, timestamp = %s
-            WHERE channelId = %s AND userId = %s
-        """, (actionid, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), channelId, self.primary.get_userid()))
+            WHERE channelid = %s AND userid = %s
+        """, (actionid, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), channelid, self.primary.get_userid()))
         conn.commit()
         cur.close()
         conn.close()
@@ -100,13 +103,13 @@ class channel:
         self.add_memory_ref(self.primary.get_channelid(), memory)
 
     # 指定チャンネルID・ユーザーIDのmemoryを更新
-    def add_memory_ref(self, channelId, memory: int):
+    def add_memory_ref(self, channelid, memory: int):
         conn = get_pg_connection()
         cur = conn.cursor()
         cur.execute(f"""
             UPDATE {self.tableName} SET memory = %s, timestamp = %s
-            WHERE channelId = %s AND userId = %s
-        """, (memory, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), channelId, self.primary.get_userid()))
+            WHERE channelid = %s AND userid = %s
+        """, (memory, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), channelid, self.primary.get_userid()))
         conn.commit()
         cur.close()
         conn.close()
@@ -116,25 +119,25 @@ class channel:
         self.add_prompt_ref(self.primary.get_channelid(), prompt)
 
     # 指定チャンネルID・ユーザーIDのpromptを更新
-    def add_prompt_ref(self, channelId, prompt):
+    def add_prompt_ref(self, channelid, prompt):
         conn = get_pg_connection()
         cur = conn.cursor()
         cur.execute(f"""
             UPDATE {self.tableName} SET prompt = %s, timestamp = %s
-            WHERE channelId = %s AND userId = %s
-        """, (prompt, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), channelId, self.primary.get_userid()))
+            WHERE channelid = %s AND userid = %s
+        """, (prompt, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), channelid, self.primary.get_userid()))
         conn.commit()
         cur.close()
         conn.close()
 
     # 指定チャンネルID・ユーザーIDのsettingを更新
-    def add_setting(self, channelId, setting):
+    def add_setting(self, channelid, setting):
         conn = get_pg_connection()
         cur = conn.cursor()
         cur.execute(f"""
             UPDATE {self.tableName} SET setting = %s, timestamp = %s
-            WHERE channelId = %s AND userId = %s
-        """, (setting, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), channelId, self.primary.get_userid()))
+            WHERE channelid = %s AND userid = %s
+        """, (setting, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), channelid, self.primary.get_userid()))
         conn.commit()
         cur.close()
         conn.close()
@@ -149,7 +152,7 @@ class channel:
         cur = conn.cursor()
         cur.execute(f"""
             UPDATE {self.tableName} SET actionid = 0, timestamp = %s
-            WHERE channelId = %s AND userId = %s
+            WHERE channelid = %s AND userid = %s
         """, (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), channelid, self.primary.get_userid()))
         conn.commit()
         cur.close()
@@ -160,12 +163,12 @@ class channel:
         self.sync_ref(self.primary.get_channelid())
 
     # 指定チャンネルIDの全レコードを最新値で同期
-    def sync_ref(self, channelId):
+    def sync_ref(self, channelid):
         print("sync start")
         conn = get_pg_connection()
         cur = conn.cursor()
-        # 指定channelIdの全レコード取得
-        cur.execute(f"SELECT * FROM {self.tableName} WHERE channelId = %s", (channelId,))
+        # 指定channelidの全レコード取得
+        cur.execute(f"SELECT * FROM {self.tableName} WHERE channelid = %s", (channelid,))
         rows = cur.fetchall()
         columns = [desc[0] for desc in cur.description]
         items = [dict(zip(columns, row)) for row in rows]
@@ -178,9 +181,9 @@ class channel:
                 cur.execute(f"""
                     UPDATE {self.tableName}
                     SET type = %s, actionid = %s, memory = %s, prompt = %s, timestamp = %s
-                    WHERE channelId = %s AND userId = %s
+                    WHERE channelid = %s AND userid = %s
                 """,
-                (source['type'], source['actionid'], source['memory'], source['prompt'], timestamp, item['channelId'], item['userId']))
+                (source['type'], source['actionid'], source['memory'], source['prompt'], timestamp, item['channelid'], item['userid']))
             conn.commit()
         cur.close()
         conn.close()

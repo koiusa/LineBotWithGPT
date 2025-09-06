@@ -1,5 +1,6 @@
 import openai
 import const
+import os
 from database.channel import channel
 from database.histoly_postgres import HistolyPostgres
 from linebot.models import (TextSendMessage)
@@ -156,7 +157,8 @@ class textresponce:
         conversation = self.histoly.get_histoly(self.current.get("memory"))
         prompt = self.histoly.to_prompt(
             conversation, self.current.get("prompt"))
-        completion = openai.ChatCompletion.create(
+        client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        completion = client.chat.completions.create(
             model=const.OPENAI_MODEL,
             messages=prompt
         )
