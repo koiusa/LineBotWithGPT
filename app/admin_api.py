@@ -99,7 +99,7 @@ def get_channels():
         for row in rows:
             channels.append({
                 'id': str(row[0]),
-                'channelId': row[1],
+                'channelid': row[1],
                 'type': row[2],
                 'prompt': row[3],
                 'memory': row[4],

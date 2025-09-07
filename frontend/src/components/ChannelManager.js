@@ -24,7 +24,7 @@ const ChannelManager = () => {
     //     setChannels([
     //       {
     //         id: '1',
-    //         channelId: 'C1234567890',
+    //         channelid: 'C1234567890',
     //         type: 'group',
     //         prompt: 'あなたは親しみやすいアシスタントです。',
     //         memory: 5,
@@ -33,7 +33,7 @@ const ChannelManager = () => {
     //       },
     //       {
     //         id: '2',
-    //         channelId: 'U0987654321',
+    //         channelid: 'U0987654321',
     //         type: 'user',
     //         prompt: 'プログラミングに関する質問に答えてください。',
     //         memory: 10,
@@ -49,14 +49,14 @@ const ChannelManager = () => {
     }
   };
 
-  const updateChannel = async (channelId, updates) => {
+  const updateChannel = async (channelid, updates) => {
     try {
       // API実装後に有効化
-      await axios.put(`/api/channels/${channelId}`, updates);
+      await axios.put(`/api/channels/${channelid}`, updates);
       
       // ダミーレスポンス（開発用）
     //   setChannels(channels.map(channel => 
-    //     channel.channelId === channelId 
+    //     channel.channelid === channelid 
     //       ? { ...channel, ...updates }
     //       : channel
     //   ));
@@ -66,15 +66,15 @@ const ChannelManager = () => {
     }
   };
 
-  const deleteChannel = async (channelId) => {
+  const deleteChannel = async (channelid) => {
     if (!window.confirm('このチャンネルを削除しますか？')) return;
     
     try {
       // API実装後に有効化
-      await axios.delete(`/api/channels/${channelId}`);
+      await axios.delete(`/api/channels/${channelid}`);
       
       // ダミーレスポンス（開発用）
-    //   setChannels(channels.filter(channel => channel.channelId !== channelId));
+    //   setChannels(channels.filter(channel => channel.channelid !== channelid));
     } catch (err) {
       setError('チャンネルの削除に失敗しました');
     }
@@ -98,17 +98,17 @@ const ChannelManager = () => {
           <ul className="channel-list">
             {channels.map(channel => (
               <li key={channel.id} className="channel-item">
-                {editingChannel === channel.channelId ? (
+                {editingChannel === channel.channelid ? (
                   <EditChannelForm 
                     channel={channel}
-                    onSave={(updates) => updateChannel(channel.channelId, updates)}
+                    onSave={(updates) => updateChannel(channel.channelid, updates)}
                     onCancel={() => setEditingChannel(null)}
                   />
                 ) : (
                   <ChannelDisplay 
                     channel={channel}
-                    onEdit={() => setEditingChannel(channel.channelId)}
-                    onDelete={() => deleteChannel(channel.channelId)}
+                    onEdit={() => setEditingChannel(channel.channelid)}
+                    onDelete={() => deleteChannel(channel.channelid)}
                   />
                 )}
               </li>
@@ -122,7 +122,7 @@ const ChannelManager = () => {
 
 const ChannelDisplay = ({ channel, onEdit, onDelete }) => (
   <div>
-    <h3>チャンネルID: {channel.channelId}</h3>
+    <h3>チャンネルID: {channel.channelid}</h3>
     <p><strong>タイプ:</strong> {channel.type === 'group' ? 'グループ' : 'ユーザー'}</p>
     <p><strong>プロンプト:</strong> {channel.prompt || '未設定'}</p>
     <p><strong>記憶数:</strong> {channel.memory}</p>
@@ -156,7 +156,7 @@ const EditChannelForm = ({ channel, onSave, onCancel }) => {
 
   return (
     <div>
-      <h3>チャンネル設定編集: {channel.channelId}</h3>
+      <h3>チャンネル設定編集: {channel.channelid}</h3>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>プロンプト（AIの役割）:</label>

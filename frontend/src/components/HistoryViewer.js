@@ -20,23 +20,23 @@ const HistoryViewer = () => {
       
       // ダミーデータ（開発用）
     //   setChannels([
-    //     { channelId: 'C1234567890', type: 'group' },
-    //     { channelId: 'U0987654321', type: 'user' }
+    //     { channelid: 'C1234567890', type: 'group' },
+    //     { channelid: 'U0987654321', type: 'user' }
     //   ]);
     } catch (err) {
       setError('チャンネル一覧の取得に失敗しました');
     }
   };
 
-  const fetchHistory = async (channelId) => {
-    if (!channelId) return;
+  const fetchHistory = async (channelid) => {
+    if (!channelid) return;
     
     try {
       setLoading(true);
       setError(null);
       
       // API実装後に有効化
-      const response = await axios.get(`/api/history/${channelId}`);
+      const response = await axios.get(`/api/history/${channelid}`);
       setHistory(response.data);
       setLoading(false);
       // ダミーデータ（開発用）
@@ -75,12 +75,12 @@ const HistoryViewer = () => {
     }
   };
 
-  const deleteHistory = async (channelId) => {
+  const deleteHistory = async (channelid) => {
     if (!window.confirm('このチャンネルの会話履歴を削除しますか？')) return;
     
     try {
       // API実装後に有効化
-      await axios.delete(`/api/history/${channelId}`);
+      await axios.delete(`/api/history/${channelid}`);
       
       // ダミーレスポンス（開発用）
     //   setHistory([]);
@@ -132,8 +132,8 @@ const HistoryViewer = () => {
           >
             <option value="">-- チャンネルを選択してください --</option>
             {channels.map(channel => (
-              <option key={channel.channelId} value={channel.channelId}>
-                {channel.channelId} ({channel.type === 'group' ? 'グループ' : 'ユーザー'})
+              <option key={channel.channelid} value={channel.channelid}>
+                {channel.channelid} ({channel.type === 'group' ? 'グループ' : 'ユーザー'})
               </option>
             ))}
           </select>

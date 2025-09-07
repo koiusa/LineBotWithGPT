@@ -9,6 +9,8 @@ services:
     volumes:
       - ./db:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - linebot-network
 
   linebot-gpt:
     build: ./app
@@ -21,6 +23,8 @@ services:
       - "18000:8000"
     tty: true
     restart: unless-stopped
+    networks:
+      - linebot-network
   
   linebot-gpt-admin:
     build: ./app
@@ -34,6 +38,8 @@ services:
     restart: unless-stopped
     environment:
       - API_MODE=admin
+    networks:
+      - linebot-network
 
   linebot-gpt-frontend:
     build:
@@ -42,12 +48,14 @@ services:
     ports:
       - "13000:3000"
     depends_on:
-      - linebot-gpt
+      - linebot-gpt-admin
     restart: unless-stopped
     env_file:
       - ./frontend/.env
     volumes:
       - ./frontend/certs:/app/certs
+    networks:
+      - linebot-network
 
   linebot-gpt-keycloak:
     image: quay.io/keycloak/keycloak:latest
@@ -60,6 +68,12 @@ services:
     restart: unless-stopped
     depends_on:
       - linebot-gpt-db
+    networks:
+      - linebot-network
 
+networks:
+  linebot-network:
+    # external: true
+    driver: bridge
 
 

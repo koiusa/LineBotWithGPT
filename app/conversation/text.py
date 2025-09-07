@@ -50,14 +50,14 @@ class textresponce:
     def run_sync(self):
         self.channel.sync()
         for target in self.targets:
-            self.channel.sync_ref(target.get("channelId"))
+            self.channel.sync_ref(target.get("channelid"))
 
     def run_reset(self):
         if not self.is_userchannel():
             self.channel.reset()
         else:
             for target in self.targets:
-                self.channel.reset_ref(target.get("channelId"))
+                self.channel.reset_ref(target.get("channelid"))
 
     def run_delete(self):
         text = self.event_context.line_event.message.text
@@ -67,7 +67,7 @@ class textresponce:
                 self.histoly.delete_histoly()
             else:
                 for target in self.targets:
-                    self.histoly.delete_histoly_ref(target.get("channelId"))
+                    self.histoly.delete_histoly_ref(target.get("channelid"))
             msg = "削除完了しました"
         else:
             msg = "削除キャンセルしました"
@@ -79,7 +79,7 @@ class textresponce:
             self.channel.add_prompt(text)
         else:
             for target in self.targets:
-                self.channel.add_prompt_ref(target.get("channelId"), text)
+                self.channel.add_prompt_ref(target.get("channelid"), text)
         msg = "AIの役割を設定しました"
         return msg
 
@@ -91,7 +91,7 @@ class textresponce:
                 self.channel.add_prompt(None)
             else:
                 for target in self.targets:
-                    self.channel.add_prompt_ref(target.get("channelId"), None)
+                    self.channel.add_prompt_ref(target.get("channelid"), None)
             msg = "AIの役割を削除しました"
         else:
             msg = "削除キャンセルしました"
@@ -108,7 +108,7 @@ class textresponce:
                 self.channel.add_memory(num)
             else:
                 for target in self.targets:
-                    self.channel.add_memory_ref(target.get("channelId"), num)
+                    self.channel.add_memory_ref(target.get("channelid"), num)
             msg = "記憶数を[{}]に設定しました".format(num)
         else:
             msg = "設定キャンセルしました"
@@ -120,10 +120,10 @@ class textresponce:
             num = int(text)
             channels = self.channel.get_channels()
             if len(channels) > num:
-                self.channel.add_setting(channels[num].get('channelId'), False)
+                self.channel.add_setting(channels[num].get('channelid'), False)
                 # self.event_context.line_bot_api.push_message(
-                #     channels[num].get('channelId'), TextSendMessage(text="[ユーザー：{}]の操作対象から削除されました。".format(
-                #         channels[num].get('userId'))))
+                #     channels[num].get('channelid'), TextSendMessage(text="[ユーザー：{}]の操作対象から削除されました。".format(
+                #         channels[num].get('userid'))))
                 msg = "[{}]を操作対象から削除しました。".format(num)
             else:
                 msg = "削除キャンセルしました"
@@ -137,10 +137,10 @@ class textresponce:
             num = int(text)
             channels = self.channel.get_channels()
             if len(channels) > num:
-                self.channel.add_setting(channels[num].get('channelId'), True)
+                self.channel.add_setting(channels[num].get('channelid'), True)
                 # self.event_context.line_bot_api.push_message(
-                #     channels[num].get('channelId'), TextSendMessage(text="[ユーザー：{}]の操作対象に設定されました。".format(
-                #         channels[num].get('userId'))))
+                #     channels[num].get('channelid'), TextSendMessage(text="[ユーザー：{}]の操作対象に設定されました。".format(
+                #         channels[num].get('userid'))))
                 msg = "[{}]を操作対象に設定しました。".format(num)
             else:
                 msg = "設定キャンセルしました"
