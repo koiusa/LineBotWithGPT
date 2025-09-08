@@ -48,7 +48,7 @@ class HistolyPostgres:
     def get_histoly(self, memory):
         channelid = self.primary.get_channelid()
         with self.conn.cursor() as cur:
-            cur.execute(f"SELECT userid, message, timestamp FROM {self.table_name} WHERE channelid = %s ORDER BY timestamp ASC", (channelid,))
+            cur.execute(f"SELECT userid, message, type, timestamp FROM {self.table_name} WHERE channelid = %s ORDER BY timestamp ASC", (channelid,))
             rows = cur.fetchall()
             memory = int(memory if memory is not None else 0)
             count = min(len(rows), memory+1)
@@ -57,7 +57,8 @@ class HistolyPostgres:
                 result.append({
                     "userid": r[0],
                     "message": r[1],
-                    "timestamp": r[2]
+                    "type": r[2],
+                    "timestamp": r[3]
                 })
             return result
 

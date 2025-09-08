@@ -28,8 +28,6 @@ class stickerresponce:
         print(self.df)
 
     def get_message(self):
-        self.channel.event_context = self.event_context
-        self.channel.primary.event_context = self.event_context
         # self.channel.sync()
         message_packageid = self.event_context.line_event.message.package_id
         message_stickerid = self.event_context.line_event.message.sticker_id

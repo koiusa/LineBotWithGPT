@@ -2,6 +2,7 @@ import openai
 import const
 import os
 import imghdr
+import hashlib
 from flask import url_for
 from werkzeug.utils import secure_filename
 from database.channel import channel
@@ -23,10 +24,6 @@ class textresponce:
         self.histoly = HistolyPostgres(self.event_context)
 
     def get_message(self):
-        self.channel.event_context = self.event_context
-        self.channel.primary.event_context = self.event_context
-        self.histoly.event_context = self.event_context
-        self.histoly.primary.event_context = self.event_context
         self.targets = self.channel.get_target_channels()
         # self.run_sync()
         msg = None
@@ -157,16 +154,15 @@ class textresponce:
 
     def run_conversation(self):
         userid = self.event_context.line_event.source.user_id
-        
-        # 画像メッセージの場合もここで対応
+        huserid = hashlib.sha256(userid.encode()).hexdigest()
         message = None
         if self.event_context.line_event.message.type == "image":
             line_bot_api = self.event_context.line_bot_api
             message_id = self.event_context.line_event.message.id
             response = line_bot_api.get_message_content(message_id)
             img_bytes = response.content
-            # 保存先 static/images/{userid}/
-            save_dir = os.path.join(os.getcwd(), "static", "images", userid)
+            # 保存先 static/images/{huserid}/
+            save_dir = os.path.join(os.getcwd(), "static", "images", huserid)
             os.makedirs(save_dir, exist_ok=True)
             # 画像バイナリから拡張子判定
             ext = imghdr.what(None, img_bytes)
@@ -177,13 +173,13 @@ class textresponce:
             with open(filepath, "wb") as f:
                 f.write(img_bytes)
             try:
-                url = url_for('static', filename=f'images/{userid}/{filename}', _external=True)
+                url = url_for('static', filename=f'images/{huserid}/{filename}', _external=True)
             except Exception:
-                url = f"/static/images/{userid}/{filename}"
+                url = f"/static/images/{huserid}/{filename}"
             message = url
         else:
             message = self.event_context.line_event.message.text
-        
+
         self.histoly.add_histoly(userid, message)
 
         conversation = self.histoly.get_histoly(self.current.get("memory"))
@@ -196,6 +192,11 @@ class textresponce:
             max_tokens=300
         )
         # 受信したテキストをCloudWatchLogsに出力する
+        print(completion.choices[0].message.content)
+        msg = completion.choices[0].message.content.lstrip()
+
+        self.histoly.add_histoly("bot", msg)
+        return msg
         print(completion.choices[0].message.content)
         msg = completion.choices[0].message.content.lstrip()
 
