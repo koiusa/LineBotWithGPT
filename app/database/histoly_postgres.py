@@ -31,7 +31,7 @@ class HistolyPostgres:
                 str(uuid.uuid4()),
                 self.primary.get_channelid(),
                 userid,
-                self.primary.get_type(),
+                self.primary.get_message_type(),
                 message,
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
             ))
