@@ -174,6 +174,9 @@ class textresponce:
                 f.write(img_bytes)
             try:
                 url = url_for('static', filename=f'images/{huserid}/{filename}', _external=True)
+                # http→httpsに強制変換
+                if url.startswith('http://'):
+                    url = 'https://' + url[len('http://'):]
             except Exception:
                 url = f"/static/images/{huserid}/{filename}"
             message = url
@@ -192,11 +195,6 @@ class textresponce:
             max_tokens=300
         )
         # 受信したテキストをCloudWatchLogsに出力する
-        print(completion.choices[0].message.content)
-        msg = completion.choices[0].message.content.lstrip()
-
-        self.histoly.add_histoly("bot", msg)
-        return msg
         print(completion.choices[0].message.content)
         msg = completion.choices[0].message.content.lstrip()
 
