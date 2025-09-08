@@ -11,7 +11,7 @@ from linebot.models import MessageEvent, TextMessage, ImageMessage, StickerMessa
 from linebot.exceptions import LineBotApiError, InvalidSignatureError
 
 app = Flask(__name__)
-app.config['PREFERRED_URL_SCHEME'] = 'https'
+
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 

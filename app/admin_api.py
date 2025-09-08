@@ -1,5 +1,3 @@
-import debugpy
-debugpy.listen(("0.0.0.0", 5679))  # ポートは任意（例: 5678）
 from flask import Flask, request, jsonify
 import os
 import json

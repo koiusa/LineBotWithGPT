@@ -154,32 +154,20 @@ class textresponce:
 
     def run_conversation(self):
         userid = self.event_context.line_event.source.user_id
-        huserid = hashlib.sha256(userid.encode()).hexdigest()
+
         message = None
         if self.event_context.line_event.message.type == "image":
             line_bot_api = self.event_context.line_bot_api
             message_id = self.event_context.line_event.message.id
             response = line_bot_api.get_message_content(message_id)
             img_bytes = response.content
-            # 保存先 static/images/{huserid}/
-            save_dir = os.path.join(os.getcwd(), "static", "images", huserid)
-            os.makedirs(save_dir, exist_ok=True)
-            # 画像バイナリから拡張子判定
             ext = imghdr.what(None, img_bytes)
             if ext is None:
-                ext = 'jpg'  # 判定できない場合はjpg
+                ext = 'jpeg'  # 判定できない場合はjpeg
             filename = secure_filename(f"{message_id}.{ext}")
-            filepath = os.path.join(save_dir, filename)
-            with open(filepath, "wb") as f:
-                f.write(img_bytes)
-            try:
-                url = url_for('static', filename=f'images/{huserid}/{filename}', _external=True)
-                # http→httpsに強制変換
-                if url.startswith('http://'):
-                    url = 'https://' + url[len('http://'):]
-            except Exception:
-                url = f"/static/images/{huserid}/{filename}"
-            message = url
+            import base64
+            img_base64 = base64.b64encode(img_bytes).decode("utf-8")
+            message = f"data:image/{ext};base64,{img_base64}"
         else:
             message = self.event_context.line_event.message.text
 
