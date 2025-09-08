@@ -1,6 +1,7 @@
 import openai
 import const
 import os
+import imghdr
 from flask import url_for
 from werkzeug.utils import secure_filename
 from database.channel import channel
@@ -163,20 +164,18 @@ class textresponce:
             # 保存先 static/images/{userid}/
             save_dir = os.path.join(os.getcwd(), "static", "images", userid)
             os.makedirs(save_dir, exist_ok=True)
-            # 画像のURLを生成
-            # URLは https://{your-domain}/static/images/{userid}/{filename}
-            # ただし、ローカル環境ではドメイン部分は省略
-            # filenameはmessage_idをそのまま利用
-            attachment = response.headers.get('Content-Type', '')
-            if hasattr(response, "content_type") and attachment.content_type and attachment.content_type.startswith("image/"):
-                filename = secure_filename(f"{message_id}")
-                filepath = os.path.join(save_dir, filename)
-                with open(filepath, "wb") as f:
-                    f.write(img_bytes)
-                try:
-                    url = url_for('static', filename=f'images/{userid}/{filename}', _external=True)
-                except Exception:
-                    url = f"/static/images/{userid}/{filename}"
+            # 画像バイナリから拡張子判定
+            ext = imghdr.what(None, img_bytes)
+            if ext is None:
+                ext = 'jpg'  # 判定できない場合はjpg
+            filename = secure_filename(f"{message_id}.{ext}")
+            filepath = os.path.join(save_dir, filename)
+            with open(filepath, "wb") as f:
+                f.write(img_bytes)
+            try:
+                url = url_for('static', filename=f'images/{userid}/{filename}', _external=True)
+            except Exception:
+                url = f"/static/images/{userid}/{filename}"
             message = url
         else:
             message = self.event_context.line_event.message.text
