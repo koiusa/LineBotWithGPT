@@ -9,7 +9,11 @@ class completion:
     def behavior(event_context: eventcontext):
         name = None
         if event_context.line_event.message.type in event_context.types:
-            name = event_context.line_event.message.type
+            if event_context.line_event.message.type == "image":
+                # 画像メッセージもtextbehaviorで処理する
+                name = "text"
+            else:
+                name = event_context.line_event.message.type
         else:
             name = "other"
         return globals()["{}{}".format(name, "behavior")]

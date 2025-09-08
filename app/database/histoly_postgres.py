@@ -63,12 +63,31 @@ class HistolyPostgres:
 
     def to_prompt(self, conversation, system):
         messages = []
+        # system prompt（AIの役割）
         if system is not None:
-            messages.append({"role": "system", "content": system})
+            messages.append({
+                "role": "system",
+                "content": [
+                    {"type": "text", "text": system}
+                ]
+            })
         for record in conversation:
-            if record["userid"] == "bot":
-                messages.append({"role": "assistant", "content": record["message"]})
+            role = "assistant" if record.get("userid") == "bot" else "user"
+            rtype = record.get("type", "text")
+            message = record.get("message", "")
+            if rtype == "image":
+                messages.append({
+                    "role": role,
+                    "content": [
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{message}"}}
+                    ]
+                })
             else:
-                messages.append({"role": "user", "content": record["message"]})
+                messages.append({
+                    "role": role,
+                    "content": [
+                        {"type": "text", "text": message}
+                    ]
+                })
         print(messages)
         return messages

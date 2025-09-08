@@ -149,10 +149,21 @@ class textresponce:
         return msg
 
     def run_conversation(self):
-        text = self.event_context.line_event.message.text
         userid = self.event_context.line_event.source.user_id
+        
+        # 画像メッセージの場合もここで対応
+        message = None
+        if self.event_context.line_event.message.type == "image":
+            line_bot_api = self.event_context.line_bot_api
+            message_id = self.event_context.line_event.message.id
+            response = line_bot_api.get_message_content(message_id)
+            img_bytes = response.content
+            import base64
+            message = base64.b64encode(img_bytes).decode("utf-8")
+        else:
+            message = self.event_context.line_event.message.text
 
-        self.histoly.add_histoly(userid, text)
+        self.histoly.add_histoly(userid, message)
 
         conversation = self.histoly.get_histoly(self.current.get("memory"))
         prompt = self.histoly.to_prompt(
@@ -160,7 +171,8 @@ class textresponce:
         client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         completion = client.chat.completions.create(
             model=const.OPENAI_MODEL,
-            messages=prompt
+            messages=prompt,
+            max_tokens=300
         )
         # 受信したテキストをCloudWatchLogsに出力する
         print(completion.choices[0].message.content)
