@@ -1,6 +1,10 @@
 import openai
 import const
 import os
+import imghdr
+import hashlib
+from flask import url_for
+from werkzeug.utils import secure_filename
 from database.channel import channel
 from database.histoly_postgres import HistolyPostgres
 from linebot.models import (TextSendMessage)
@@ -149,10 +153,24 @@ class textresponce:
         return msg
 
     def run_conversation(self):
-        text = self.event_context.line_event.message.text
         userid = self.event_context.line_event.source.user_id
 
-        self.histoly.add_histoly(userid, text)
+        message = None
+        if self.event_context.line_event.message.type == "image":
+            line_bot_api = self.event_context.line_bot_api
+            message_id = self.event_context.line_event.message.id
+            response = line_bot_api.get_message_content(message_id)
+            img_bytes = response.content
+            ext = imghdr.what(None, img_bytes)
+            if ext is None:
+                ext = 'jpeg'  # 判定できない場合はjpeg
+            import base64
+            img_base64 = base64.b64encode(img_bytes).decode("utf-8")
+            message = f"data:image/{ext};base64,{img_base64}"
+        else:
+            message = self.event_context.line_event.message.text
+
+        self.histoly.add_histoly_variable(userid, message, self.event_context.line_event.message.type)
 
         conversation = self.histoly.get_histoly(self.current.get("memory"))
         prompt = self.histoly.to_prompt(
@@ -160,11 +178,12 @@ class textresponce:
         client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         completion = client.chat.completions.create(
             model=const.OPENAI_MODEL,
-            messages=prompt
+            messages=prompt,
+            max_tokens=300
         )
         # 受信したテキストをCloudWatchLogsに出力する
         print(completion.choices[0].message.content)
         msg = completion.choices[0].message.content.lstrip()
 
-        self.histoly.add_histoly("bot", msg)
+        self.histoly.add_histoly_text("bot", msg)
         return msg

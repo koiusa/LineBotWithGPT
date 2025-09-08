@@ -23,5 +23,8 @@ class primary:
     def get_type(self):
         return self.event_context.line_event.source.type
 
+    def get_message_type(self):
+        return self.event_context.line_event.message.type
+
     def get_userid(self):
         return self.event_context.line_event.source.user_id

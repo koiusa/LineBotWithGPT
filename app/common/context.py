@@ -2,7 +2,7 @@ from linebot import (LineBotApi, WebhookHandler)
 
 
 class eventcontext:
-    types = ["text", "sticker"]
+    types = ["text", "sticker", "image"]
     line_event = None
     line_bot_api = None
 

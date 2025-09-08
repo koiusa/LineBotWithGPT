@@ -1,5 +1,3 @@
-import debugpy
-debugpy.listen(("0.0.0.0", 5679))  # ポートは任意（例: 5678）
 from flask import Flask, request, jsonify
 import os
 import json
@@ -17,10 +15,10 @@ def load_settings():
             return json.load(f)
     # デフォルト値
     return {
-        "openaiModel": "gpt-4.1-turbo",
+        "openaiModel": "gpt-4.1",
         "defaultMemory": 5,
         "maxMemory": 10,
-        "systemPrompt": "あなたは親しみやすいアシスタントです。"
+        "systemPrompt": "デフォルトのシステムプロンプトです。"
     }
 
 def save_settings(data):
@@ -51,7 +49,7 @@ def api_settings():
 def api_test_connection():
     from openai import OpenAI
     api_key = os.getenv("OPENAI_API_KEY")
-    model = load_settings().get("openaiModel", "gpt-4.1-turbo")
+    model = load_settings().get("openaiModel")
     try:
         client = OpenAI(api_key=api_key)
         # モデルリスト取得でAPIキーの有効性を確認

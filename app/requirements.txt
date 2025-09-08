@@ -5,3 +5,4 @@ psycopg2-binary
 # Flaskサーバー型用
 flask
 gunicorn
+werkzeug
