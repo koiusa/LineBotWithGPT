@@ -22,7 +22,7 @@ class HistolyPostgres:
         )
         self.table_name = "linebot_chatgpt_history"
 
-    def add_histoly(self, userid, message):
+    def add_histoly(self, userid, message, type):
         with self.conn.cursor() as cur:
             cur.execute(f"""
                 INSERT INTO {self.table_name} (id, channelid, userid, type, message, timestamp)
@@ -36,6 +36,9 @@ class HistolyPostgres:
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
             ))
             self.conn.commit()
+    
+    def add_histoly_text(self, userid, message):
+        self.add_histoly(userid, message, "text")
 
     def delete_histoly(self):
         self.delete_histoly_ref(self.primary.get_channelid())

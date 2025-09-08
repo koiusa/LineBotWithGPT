@@ -164,7 +164,6 @@ class textresponce:
             ext = imghdr.what(None, img_bytes)
             if ext is None:
                 ext = 'jpeg'  # 判定できない場合はjpeg
-            filename = secure_filename(f"{message_id}.{ext}")
             import base64
             img_base64 = base64.b64encode(img_bytes).decode("utf-8")
             message = f"data:image/{ext};base64,{img_base64}"
@@ -186,5 +185,5 @@ class textresponce:
         print(completion.choices[0].message.content)
         msg = completion.choices[0].message.content.lstrip()
 
-        self.histoly.add_histoly("bot", msg)
+        self.histoly.add_histoly_text("bot", msg)
         return msg
