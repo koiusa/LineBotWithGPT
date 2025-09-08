@@ -170,7 +170,7 @@ class textresponce:
         else:
             message = self.event_context.line_event.message.text
 
-        self.histoly.add_histoly(userid, message)
+        self.histoly.add_histoly_variable(userid, message, self.event_context.line_event.message.type)
 
         conversation = self.histoly.get_histoly(self.current.get("memory"))
         prompt = self.histoly.to_prompt(
