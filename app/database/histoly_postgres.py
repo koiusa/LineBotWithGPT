@@ -79,7 +79,7 @@ class HistolyPostgres:
                 messages.append({
                     "role": role,
                     "content": [
-                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{message}"}}
+                        {"type": "image_url", "image_url": {"url": message}}
                     ]
                 })
             else:
