@@ -37,7 +37,7 @@ const HistoryViewer = () => {
       
       // API実装後に有効化
       const response = await axios.get(`/api/history/${channelid}`);
-      setHistory(response.data);
+      setHistory(Array.isArray(response.data.history) ? response.data.history : []);
       setLoading(false);
       // ダミーデータ（開発用）
     //   setTimeout(() => {
@@ -91,7 +91,7 @@ const HistoryViewer = () => {
   };
 
   const exportHistory = () => {
-    if (history.length === 0) {
+    if (!Array.isArray(history) || history.length === 0) {
       alert('エクスポートする履歴がありません');
       return;
     }
@@ -144,14 +144,14 @@ const HistoryViewer = () => {
             <button 
               className="btn btn-primary" 
               onClick={exportHistory}
-              disabled={history.length === 0}
+              disabled={!Array.isArray(history) || history.length === 0}
             >
               履歴エクスポート
             </button>
             <button 
               className="btn btn-danger" 
               onClick={() => deleteHistory(selectedChannel)}
-              disabled={history.length === 0}
+              disabled={!Array.isArray(history) || history.length === 0}
             >
               履歴削除
             </button>
@@ -161,14 +161,14 @@ const HistoryViewer = () => {
 
       {selectedChannel && (
         <div className="card">
-          <h3>会話履歴 ({history.length}件)</h3>
+          <h3>会話履歴 ({Array.isArray(history) ? history.length : 0}件)</h3>
           
           {loading && <div className="loading">読み込み中...</div>}
           {error && <div className="error">{error}</div>}
           
           {!loading && !error && (
             <>
-              {history.length === 0 ? (
+              {!Array.isArray(history) || history.length === 0 ? (
                 <p>会話履歴がありません。</p>
               ) : (
                 <div className="history-list">

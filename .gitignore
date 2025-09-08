@@ -154,3 +154,6 @@ frontend/yarn.lock
 frontend/.eslintcache
 # Certificates
 frontend/certs/
+
+# VS Code settings
+.vscode/

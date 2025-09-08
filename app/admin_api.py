@@ -1,9 +1,13 @@
+import debugpy
+debugpy.listen(("0.0.0.0", 5679))  # ポートは任意（例: 5678）
 from flask import Flask, request, jsonify
 import os
 import json
 import psycopg2
 import uuid
 from datetime import datetime
+from dotenv import load_dotenv
+load_dotenv()  # .envファイルを自動ロード
 
 ADMIN_SETTINGS_FILE = os.environ.get("ADMIN_SETTINGS_FILE", "/app/admin_settings.json")
 
@@ -71,7 +75,7 @@ def get_stats():
             total_messages = cur.fetchone()[0]
             
             # アクティブチャンネル数
-            cur.execute("SELECT COUNT(*) FROM linebot_chatgpt_channel WHERE setting->>'active' = 'true' OR setting IS NULL")
+            cur.execute("SELECT COUNT(*) FROM linebot_chatgpt_channel WHERE setting = TRUE")
             active_channels = cur.fetchone()[0]
         
         conn.close()
