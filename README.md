@@ -55,7 +55,7 @@ docker compose up -d
 | サービス | ポート | 説明 |
 |---------|--------|------|
 | linebot-gpt | 18000 | Flask API サーバー (LINE Webhook) |
-| linebot-gpt-frontend | 14000 | React Web管理画面 |
+| linebot-gpt-frontend | 13000 | React Web管理画面 |
 | linebot-gpt-db | 65432 | PostgreSQL データベース |
 
 ## データベース構造（PostgreSQL）
