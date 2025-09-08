@@ -1,0 +1,7 @@
+openai
+pandas
+line-bot-sdk
+psycopg2-binary
+# Flaskサーバー型用
+flask
+gunicorn

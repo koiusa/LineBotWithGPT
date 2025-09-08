@@ -1,0 +1,79 @@
+services:
+  linebot-gpt-db:
+    image: postgres:17.6
+    container_name: linebot-gpt-db
+    env_file:
+      - .env
+    ports:
+      - "65432:5432"
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - linebot-network
+
+  linebot-gpt:
+    build: ./app
+    container_name: linebot-gpt
+    env_file:
+      - .env
+    depends_on:
+      - linebot-gpt-db
+    ports:
+      - "18000:8000"
+    tty: true
+    restart: unless-stopped
+    networks:
+      - linebot-network
+  
+  linebot-gpt-admin:
+    build: ./app
+    container_name: linebot-gpt-admin
+    env_file:
+      - .env
+    depends_on:
+      - linebot-gpt-db
+    ports:
+      - "18001:8001"
+    restart: unless-stopped
+    environment:
+      - API_MODE=admin
+    networks:
+      - linebot-network
+
+  linebot-gpt-frontend:
+    build:
+      context: ./frontend
+    container_name: linebot-gpt-frontend
+    ports:
+      - "13000:3000"
+    depends_on:
+      - linebot-gpt-admin
+    restart: unless-stopped
+    env_file:
+      - ./frontend/.env
+    volumes:
+      - ./frontend/certs:/app/certs
+    networks:
+      - linebot-network
+
+  linebot-gpt-keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: linebot-gpt-keycloak
+    env_file:
+      - .env
+    ports:
+      - "9999:8080"
+    command: start-dev
+    restart: unless-stopped
+    depends_on:
+      - linebot-gpt-db
+    networks:
+      - linebot-network
+
+networks:
+  linebot-network:
+    # external: true
+    driver: bridge
+
+

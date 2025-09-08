@@ -65,7 +65,7 @@ class stickerresponce:
                 channels = []
                 for idx, val in enumerate(record):
                     channels.append("{} : {} | {} {}".format(
-                        idx, val["setting"], val["type"], val["channelId"]))
+                        idx, val["setting"], val["type"], val["channelid"]))
                 caption = "{}\n{}".format(caption, "\n".join(channels))
         else:
             if action.action_id == 2:
