@@ -4,7 +4,6 @@ import os
 import imghdr
 import hashlib
 from flask import url_for
-from werkzeug.utils import secure_filename
 from database.channel import channel
 from database.histoly_postgres import HistolyPostgres
 from linebot.models import (TextSendMessage)

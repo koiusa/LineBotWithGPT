@@ -1,3 +1,5 @@
+import debugpy
+debugpy.listen(("0.0.0.0", 5679))  # 任意のポート
 from flask import Flask, request, jsonify
 import os
 import json
@@ -6,6 +8,7 @@ import uuid
 from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()  # .envファイルを自動ロード
+from database.system_postgres import SystemPostgres
 
 ADMIN_SETTINGS_FILE = os.environ.get("ADMIN_SETTINGS_FILE", "/app/admin_settings.json")
 
@@ -39,7 +42,8 @@ app = Flask(__name__)
 @app.route("/api/settings", methods=["GET", "PUT"])
 def api_settings():
     if request.method == "GET":
-        return jsonify(load_settings())
+        system = SystemPostgres()
+        return jsonify(system.get_system_prompt_json())
     elif request.method == "PUT":
         data = request.json
         save_settings(data)
@@ -48,8 +52,9 @@ def api_settings():
 @app.route("/api/test-connection", methods=["POST"])
 def api_test_connection():
     from openai import OpenAI
+    system = SystemPostgres()
     api_key = os.getenv("OPENAI_API_KEY")
-    model = load_settings().get("openaiModel")
+    model = system.get_system_prompt_value("openaiModel")
     try:
         client = OpenAI(api_key=api_key)
         # モデルリスト取得でAPIキーの有効性を確認
@@ -128,7 +133,7 @@ def manage_channel(channel_id):
                 """, (
                     data.get('prompt'),
                     data.get('memory'),
-                    json.dumps(data.get('setting', {})),
+                    data.get('setting')['active'],  # boolean型ならTrue/Falseを直接渡す
                     datetime.now(),
                     channel_id
                 ))
