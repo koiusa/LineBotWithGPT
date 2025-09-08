@@ -23,6 +23,10 @@ class textresponce:
         self.histoly = HistolyPostgres(self.event_context)
 
     def get_message(self):
+        self.channel.event_context = self.event_context
+        self.channel.primary.event_context = self.event_context
+        self.histoly.event_context = self.event_context
+        self.histoly.primary.event_context = self.event_context
         self.targets = self.channel.get_target_channels()
         # self.run_sync()
         msg = None
@@ -179,7 +183,7 @@ class textresponce:
             message = url
         else:
             message = self.event_context.line_event.message.text
-
+        
         self.histoly.add_histoly(userid, message)
 
         conversation = self.histoly.get_histoly(self.current.get("memory"))
