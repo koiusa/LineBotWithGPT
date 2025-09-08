@@ -29,6 +29,7 @@ class stickerresponce:
 
     def get_message(self):
         # self.channel.sync()
+        self.current = self.channel.get_record()
         message_packageid = self.event_context.line_event.message.package_id
         message_stickerid = self.event_context.line_event.message.sticker_id
         action = self.get_action(message_packageid, message_stickerid)
