@@ -2,6 +2,7 @@ openai
 pandas
 line-bot-sdk
 psycopg2-binary
+python-dotenv
 # Flaskサーバー型用
 flask
 gunicorn
