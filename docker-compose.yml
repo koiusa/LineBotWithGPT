@@ -68,6 +68,23 @@ services:
     restart: unless-stopped
     depends_on:
       - linebot-gpt-db
+    environment:
+      # Enable CORS for frontend access
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HTTP_ENABLED=true
+      # Allow all origins in development (should be restricted in production)
+      - KC_HOSTNAME_STRICT_BACKCHANNEL=false
+      # Database configuration
+      - KC_DB=${KC_DB}
+      - KC_DB_URL_HOST=${KC_DB_URL_HOST}
+      - KC_DB_URL_PORT=${KC_DB_URL_PORT}
+      - KC_DB_URL_DATABASE=${KC_DB_URL_DATABASE}
+      - KC_DB_USERNAME=${KC_DB_USERNAME}
+      - KC_DB_PASSWORD=${KC_DB_PASSWORD}
+      # Admin credentials
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
     networks:
       - linebot-network
 
