@@ -80,10 +80,9 @@ const Settings = () => {
 
     try {
       // API実装後に有効化
-      const response = await axios.post('/api/test-connection');
+      await axios.post('/api/test-connection');
       setLoading(false);
       alert('OpenAI APIへの接続テストが成功しました');
-      setLoading(false);
 
       // ダミーレスポンス（開発用）
       // setTimeout(() => {
