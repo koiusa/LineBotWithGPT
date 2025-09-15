@@ -14,19 +14,55 @@ function App() {
   useEffect(() => {
     const redirectUri = window.location.origin + '/';
     console.log('🔄 Keycloak初期化開始: redirectUri =', redirectUri);
+    console.log('🌍 Environment details:');
+    console.log('   - Origin:', window.location.origin);
+    console.log('   - Protocol:', window.location.protocol);
+    console.log('   - Hostname:', window.location.hostname);
+    console.log('   - Port:', window.location.port);
     
-    // HTTPS環境対応のKeycloak初期化
-    keycloak.init({
+    // Enhanced Keycloak initialization with robust error handling
+    const initOptions = {
       onLoad: 'login-required',
       checkLoginIframe: false,
-    })
+      redirectUri: redirectUri,
+      // Enhanced configuration for better reliability
+      enableLogging: true,
+      // Disable login iframe for development to avoid CORS issues
+      checkLoginIframeInterval: 0,
+      // Set response mode for better compatibility
+      responseMode: 'fragment'
+    };
+    
+    console.log('🔧 Keycloak init options:', initOptions);
+    
+    keycloak.init(initOptions)
     .then(authenticated => {
       console.log('✅ Keycloak初期化完了:', authenticated);
+      if (authenticated) {
+        console.log('🎉 User is authenticated!');
+        console.log('🔑 Token info:');
+        console.log('   - Has token:', !!keycloak.token);
+        console.log('   - Has refresh token:', !!keycloak.refreshToken);
+        console.log('   - Token expires in:', keycloak.tokenParsed?.exp ? new Date(keycloak.tokenParsed.exp * 1000) : 'Unknown');
+      } else {
+        console.log('🔒 User not authenticated, should redirect to login');
+      }
       setAuthenticated(authenticated);
       setLoading(false);
     })
     .catch((error) => {
       console.error('❌ Keycloak初期化失敗:', error);
+      console.error('🔍 Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+      console.error('💡 Troubleshooting tips:');
+      console.error('   1. Check if Keycloak server is running at the configured URL');
+      console.error('   2. Verify REACT_APP_KEYCLOAK_URL environment variable');
+      console.error('   3. Ensure "linebot-frontend" client exists in Keycloak realm "linebot"');
+      console.error('   4. Check Keycloak client configuration for valid redirect URIs');
+      console.error('   5. Verify CORS settings in Keycloak');
       setLoading(false);
     });
   }, []);
@@ -53,6 +89,12 @@ function App() {
         <div style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>
           URL: {window.location.origin}
         </div>
+        <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+          Keycloak URL: {process.env.REACT_APP_KEYCLOAK_URL}
+        </div>
+        <div style={{ fontSize: '12px', color: '#999', marginTop: '10px' }}>
+          Keycloakサーバーに接続しています...
+        </div>
       </div>
     );
   }
@@ -64,9 +106,24 @@ function App() {
         <div style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>
           Keycloakにリダイレクトしています...
         </div>
-        <button onClick={() => window.location.reload()} style={{ marginTop: '10px' }}>
-          🔄 再試行
-        </button>
+        <div style={{ fontSize: '11px', color: '#999', marginTop: '10px' }}>
+          <div>Keycloak URL: {process.env.REACT_APP_KEYCLOAK_URL}</div>
+          <div>Frontend URL: {window.location.origin}</div>
+        </div>
+        <div style={{ marginTop: '15px' }}>
+          <button onClick={() => window.location.reload()} style={{ marginRight: '10px' }}>
+            🔄 再試行
+          </button>
+          <button onClick={() => {
+            console.log('🔍 Manual login attempt');
+            keycloak.login();
+          }}>
+            🔑 手動ログイン
+          </button>
+        </div>
+        <div style={{ fontSize: '11px', color: '#999', marginTop: '15px' }}>
+          認証に問題がある場合は、ブラウザの開発者ツールのコンソールを確認してください
+        </div>
       </div>
     );
   }
