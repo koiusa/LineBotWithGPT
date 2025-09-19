@@ -121,7 +121,7 @@ class textresponce:
         text = self.event_context.line_event.message.text
         if text.isdecimal():
             num = int(text)
-            channels = self.channel.get_channels()
+            channels = self.channel.get_channels_by_user()
             if len(channels) > num:
                 self.channel.add_setting(channels[num].get('channelid'), False)
                 # self.event_context.line_bot_api.push_message(
@@ -138,7 +138,7 @@ class textresponce:
         text = self.event_context.line_event.message.text
         if text.isdecimal():
             num = int(text)
-            channels = self.channel.get_channels()
+            channels = self.channel.get_channels_by_user()
             if len(channels) > num:
                 self.channel.add_setting(channels[num].get('channelid'), True)
                 # self.event_context.line_bot_api.push_message(

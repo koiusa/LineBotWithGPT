@@ -201,11 +201,23 @@ class channel:
         conn.close()
         return items
 
-    # setting=True のチャンネルレコードのみ取得
+    # 現在のユーザーのチャンネルレコードのみ取得
+    def get_channels_by_user(self):
+        conn = get_pg_connection()
+        cur = conn.cursor()
+        cur.execute(f"SELECT * FROM {self.tableName} WHERE userid = %s", (self.primary.get_userid(),))
+        rows = cur.fetchall()
+        columns = [desc[0] for desc in cur.description]
+        items = [dict(zip(columns, row)) for row in rows]
+        cur.close()
+        conn.close()
+        return items
+
+    # setting=True のチャンネルレコードのみ取得（現在のユーザーに限定）
     def get_target_channels(self):
         conn = get_pg_connection()
         cur = conn.cursor()
-        cur.execute(f"SELECT * FROM {self.tableName} WHERE setting = TRUE")
+        cur.execute(f"SELECT * FROM {self.tableName} WHERE setting = TRUE AND userid = %s", (self.primary.get_userid(),))
         rows = cur.fetchall()
         columns = [desc[0] for desc in cur.description]
         items = [dict(zip(columns, row)) for row in rows]
