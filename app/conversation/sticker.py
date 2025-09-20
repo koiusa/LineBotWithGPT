@@ -62,12 +62,14 @@ class stickerresponce:
         self.channel.add_action(action.action_id)
         if action.type == "receive":
             if action.action_id == 6 or action.action_id == 7:
-                record = self.channel.get_target_channels()
-                channels = []
-                for idx, val in enumerate(record):
-                    channels.append("{} : {} | {} {}".format(
-                        idx, val["setting"], val["type"], val["channelid"]))
-                caption = "{}\n{}".format(caption, "\n".join(channels))
+                # 対象チャンネルを1件のみ取得
+                items = self.channel.get_target_channel()
+                if items and len(items) > 0:
+                    val = items[0]
+                    one_line = "{} | {} {}".format(val["setting"], val["type"], val["channelid"])
+                    caption = "{}\n{}".format(caption, one_line)
+                else:
+                    caption = "{}\n{}".format(caption, "No target channel")
         else:
             if action.action_id == 2:
                 record = self.channel.get_record()

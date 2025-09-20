@@ -60,14 +60,14 @@ services:
   linebot-gpt-keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: linebot-gpt-keycloak
-    env_file:
-      - .env
     ports:
       - "9999:8080"
     command: start-dev
     restart: unless-stopped
     depends_on:
       - linebot-gpt-db
+    env_file:
+      - .env
     networks:
       - linebot-network
 
