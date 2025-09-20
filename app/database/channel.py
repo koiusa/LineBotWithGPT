@@ -224,3 +224,15 @@ class channel:
         cur.close()
         conn.close()
         return items
+
+        # setting=True のチャンネルレコードのみ取得（現在のユーザーに限定）
+    def get_target_channel(self):
+        conn = get_pg_connection()
+        cur = conn.cursor()
+        cur.execute(f"SELECT * FROM {self.tableName} WHERE setting = TRUE AND userid = %s AND channelid = %s", (self.primary.get_userid(), self.primary.get_channelid()))
+        rows = cur.fetchall()
+        columns = [desc[0] for desc in cur.description]
+        items = [dict(zip(columns, row)) for row in rows]
+        cur.close()
+        conn.close()
+        return items

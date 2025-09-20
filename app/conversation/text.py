@@ -15,7 +15,7 @@ class textresponce:
     channel = None
     histoly = None
     current = None
-    targets = None
+    target = None
 
     def __init__(self, event_context: eventcontext):
         self.event_context = event_context
@@ -23,7 +23,9 @@ class textresponce:
         self.histoly = HistolyPostgres(self.event_context)
 
     def get_message(self):
-        self.targets = self.channel.get_target_channels()
+        # get_target_channel() は配列を返すため、1件目をターゲットとして扱う
+        items = self.channel.get_target_channel()
+        self.target = items[0] if items and len(items) > 0 else None
         # self.run_sync()
         msg = None
 
@@ -52,15 +54,18 @@ class textresponce:
 
     def run_sync(self):
         self.channel.sync()
-        for target in self.targets:
-            self.channel.sync_ref(target.get("channelid"))
+        if self.target and self.target.get("channelid"):
+            self.channel.sync_ref(self.target.get("channelid"))
 
     def run_reset(self):
         if not self.is_userchannel():
             self.channel.reset()
         else:
-            for target in self.targets:
-                self.channel.reset_ref(target.get("channelid"))
+            # 対象チャンネルが無い場合は安全にreset()へフォールバック
+            if self.target and self.target.get("channelid"):
+                self.channel.reset_ref(self.target.get("channelid"))
+            else:
+                self.channel.reset()
 
     def run_delete(self):
         text = self.event_context.line_event.message.text
@@ -69,8 +74,10 @@ class textresponce:
             if not self.is_userchannel():
                 self.histoly.delete_histoly()
             else:
-                for target in self.targets:
-                    self.histoly.delete_histoly_ref(target.get("channelid"))
+                if self.target and self.target.get("channelid"):
+                    self.histoly.delete_histoly_ref(self.target.get("channelid"))
+                else:
+                    return "対象チャンネルが設定されていません"
             msg = "削除完了しました"
         else:
             msg = "削除キャンセルしました"
@@ -81,8 +88,10 @@ class textresponce:
         if not self.is_userchannel():
             self.channel.add_prompt(text)
         else:
-            for target in self.targets:
-                self.channel.add_prompt_ref(target.get("channelid"), text)
+            if self.target and self.target.get("channelid"):
+                self.channel.add_prompt_ref(self.target.get("channelid"), text)
+            else:
+                return "対象チャンネルが設定されていません"
         msg = "AIの役割を設定しました"
         return msg
 
@@ -93,8 +102,10 @@ class textresponce:
             if not self.is_userchannel():
                 self.channel.add_prompt(None)
             else:
-                for target in self.targets:
-                    self.channel.add_prompt_ref(target.get("channelid"), None)
+                if self.target and self.target.get("channelid"):
+                    self.channel.add_prompt_ref(self.target.get("channelid"), None)
+                else:
+                    return "対象チャンネルが設定されていません"
             msg = "AIの役割を削除しました"
         else:
             msg = "削除キャンセルしました"
@@ -110,8 +121,10 @@ class textresponce:
             if not self.is_userchannel():
                 self.channel.add_memory(num)
             else:
-                for target in self.targets:
-                    self.channel.add_memory_ref(target.get("channelid"), num)
+                if self.target and self.target.get("channelid"):
+                    self.channel.add_memory_ref(self.target.get("channelid"), num)
+                else:
+                    return "対象チャンネルが設定されていません"
             msg = "記憶数を[{}]に設定しました".format(num)
         else:
             msg = "設定キャンセルしました"
@@ -154,20 +167,7 @@ class textresponce:
     def run_conversation(self):
         userid = self.event_context.line_event.source.user_id
 
-        message = None
-        if self.event_context.line_event.message.type == "image":
-            line_bot_api = self.event_context.line_bot_api
-            message_id = self.event_context.line_event.message.id
-            response = line_bot_api.get_message_content(message_id)
-            img_bytes = response.content
-            ext = imghdr.what(None, img_bytes)
-            if ext is None:
-                ext = 'jpeg'  # 判定できない場合はjpeg
-            import base64
-            img_base64 = base64.b64encode(img_bytes).decode("utf-8")
-            message = f"data:image/{ext};base64,{img_base64}"
-        else:
-            message = self.event_context.line_event.message.text
+        message = self.event_context.line_event.message.text
 
         self.histoly.add_histoly_variable(userid, message, self.event_context.line_event.message.type)
 
