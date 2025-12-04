@@ -93,5 +93,6 @@ class HistolyPostgres:
                         {"type": "text", "text": message}
                     ]
                 })
-        print(messages)
+        # 画像データを含む可能性があるため、簡潔なログ出力に変更
+        print(f"[History] {len(messages)} messages prepared")
         return messages
