@@ -7,7 +7,7 @@ class eventcontext:
     line_event = None
     line_bot_api = None
     # LINEメッセージの最大文字数制限
-    MAX_MESSAGE_LENGTH = 5000
+    MAX_MESSAGE_LENGTH = 1000
 
     def __init__(self, event: WebhookHandler, linebot: LineBotApi):
         self.line_event = event
