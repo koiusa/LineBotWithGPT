@@ -178,7 +178,7 @@ class textresponce:
         completion = client.chat.completions.create(
             model=const.OPENAI_MODEL,
             messages=prompt,
-            max_tokens=300
+            max_tokens=1500  # 長文対応のために増加
         )
         # 受信したテキストをCloudWatchLogsに出力する
         print(completion.choices[0].message.content)
