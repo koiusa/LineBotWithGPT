@@ -26,8 +26,11 @@ class eventcontext:
         """
         if max_length is None:
             max_length = self.MAX_MESSAGE_LENGTH
+        
+        print(f"[Split Debug] Text length: {len(text)}, Max length: {max_length}")
             
         if len(text) <= max_length:
+            print(f"[Split Debug] Text is within limit, returning single message")
             return [text]
         
         messages = []
@@ -61,6 +64,10 @@ class eventcontext:
         if current_message:
             messages.append(current_message)
         
+        print(f"[Split Debug] Split into {len(messages)} messages")
+        for i, msg in enumerate(messages):
+            print(f"[Split Debug] Message {i+1} length: {len(msg)}")
+        
         return messages
 
     def reply_message(self, message):
@@ -74,13 +81,18 @@ class eventcontext:
             messages: TextSendMessageのリスト、または文字列のリスト
         """
         if not messages:
+            print("[Reply Debug] No messages to send")
             return
+        
+        print(f"[Reply Debug] Sending {len(messages)} messages")
         
         # 文字列のリストの場合はTextSendMessageに変換
         if isinstance(messages[0], str):
+            print(f"[Reply Debug] Converting strings to TextSendMessage")
             messages = [TextSendMessage(text=msg) for msg in messages]
         
         # 最初のメッセージはreplyで送信
+        print(f"[Reply Debug] Sending first message via reply")
         self.line_bot_api.reply_message(
             self.line_event.reply_token, messages[0])
         
@@ -95,8 +107,12 @@ class eventcontext:
             else:
                 channel_id = source.user_id
             
-            for msg in messages[1:]:
+            print(f"[Reply Debug] Pushing {len(messages) - 1} additional messages to {channel_id}")
+            for i, msg in enumerate(messages[1:], 2):
+                print(f"[Reply Debug] Pushing message {i}/{len(messages)}")
                 self.line_bot_api.push_message(channel_id, msg)
+        else:
+            print(f"[Reply Debug] Only one message, no push needed")
     
     def _log_event(self):
         """イベント情報をログに出力（画像の場合は簡潔に）"""

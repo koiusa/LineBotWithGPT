@@ -25,9 +25,12 @@ class textbehavior:
         responce = textresponce(event_context)
         msg = responce.get_message()
         # msgがリストの場合は複数メッセージとして送信、文字列の場合は単一メッセージ
+        print(f"[Behavior Debug] Message type: {type(msg)}, Is list: {isinstance(msg, list)}")
         if isinstance(msg, list):
+            print(f"[Behavior Debug] List has {len(msg)} items")
             event_context.reply_messages(msg)
         else:
+            print(f"[Behavior Debug] Single message, length: {len(msg) if isinstance(msg, str) else 'N/A'}")
             event_context.reply_message(TextSendMessage(text=msg))
 
 class imagebehavior:
