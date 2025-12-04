@@ -86,10 +86,15 @@ class eventcontext:
         
         # 2つ目以降のメッセージはpushで送信
         if len(messages) > 1:
-            channel_id = self.line_event.source.sender_id if hasattr(self.line_event.source, 'sender_id') else (
-                self.line_event.source.group_id if hasattr(self.line_event.source, 'group_id') else 
-                self.line_event.source.user_id
-            )
+            # ソースタイプに応じてチャンネルIDを取得
+            source = self.line_event.source
+            if hasattr(source, 'group_id') and source.group_id:
+                channel_id = source.group_id
+            elif hasattr(source, 'room_id') and source.room_id:
+                channel_id = source.room_id
+            else:
+                channel_id = source.user_id
+            
             for msg in messages[1:]:
                 self.line_bot_api.push_message(channel_id, msg)
     
