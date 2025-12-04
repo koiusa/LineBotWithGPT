@@ -12,7 +12,7 @@ class eventcontext:
     def __init__(self, event: WebhookHandler, linebot: LineBotApi):
         self.line_event = event
         self.line_bot_api = linebot
-        print(self.line_event)
+        self._log_event()
 
     def split_long_message(self, text: str, max_length: int = None) -> list:
         """長文メッセージを指定文字数で分割する
@@ -92,3 +92,28 @@ class eventcontext:
             )
             for msg in messages[1:]:
                 self.line_bot_api.push_message(channel_id, msg)
+    
+    def _log_event(self):
+        """イベント情報をログに出力（画像の場合は簡潔に）"""
+        if hasattr(self.line_event, 'message') and hasattr(self.line_event.message, 'type'):
+            msg_type = self.line_event.message.type
+            
+            if msg_type == 'image':
+                # 画像の場合は簡潔な情報のみ
+                print(f"[Image Message] ID: {self.line_event.message.id}, User: {self.line_event.source.user_id}")
+            elif msg_type == 'text':
+                # テキストメッセージは内容も表示
+                text = self.line_event.message.text
+                # 長すぎる場合は省略
+                if len(text) > 100:
+                    text = text[:100] + "..."
+                print(f"[Text Message] User: {self.line_event.source.user_id}, Text: {text}")
+            elif msg_type == 'sticker':
+                # スティッカーの場合
+                print(f"[Sticker Message] ID: {self.line_event.message.sticker_id}, User: {self.line_event.source.user_id}")
+            else:
+                # その他のメッセージタイプ
+                print(f"[{msg_type.upper()} Message] User: {self.line_event.source.user_id}")
+        else:
+            # メッセージ以外のイベント
+            print(self.line_event)
