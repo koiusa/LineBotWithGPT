@@ -34,14 +34,22 @@ class imagebehavior:
     def conversation(event_context: eventcontext):
         responce = imageresponce(event_context)
         msg = responce.get_message()
-        event_context.reply_message(TextSendMessage(text=msg))
+        # msgがリストの場合は複数メッセージとして送信、文字列の場合は単一メッセージ
+        if isinstance(msg, list):
+            event_context.reply_messages(msg)
+        else:
+            event_context.reply_message(TextSendMessage(text=msg))
 
 
 class stickerbehavior:
     def conversation(event_context: eventcontext):
         responce = stickerresponce(event_context)
         msg = responce.get_message()
-        event_context.reply_message(TextSendMessage(text=msg))
+        # msgがリストの場合は複数メッセージとして送信、文字列の場合は単一メッセージ
+        if isinstance(msg, list):
+            event_context.reply_messages(msg)
+        else:
+            event_context.reply_message(TextSendMessage(text=msg))
 
 
 class otherbehavior:

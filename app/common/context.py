@@ -6,8 +6,8 @@ class eventcontext:
     types = ["text", "sticker", "image"]
     line_event = None
     line_bot_api = None
-    # LINEメッセージの最大文字数制限
-    MAX_MESSAGE_LENGTH = 1000
+    # LINEメッセージの最大文字数制限（安全のため少し余裕を持たせて4500文字に設定）
+    MAX_MESSAGE_LENGTH = 4500
 
     def __init__(self, event: WebhookHandler, linebot: LineBotApi):
         self.line_event = event

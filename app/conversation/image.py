@@ -77,4 +77,6 @@ class imageresponce:
         msg = completion.choices[0].message.content.lstrip()
 
         self.histoly.add_histoly_text("bot", msg)
-        return msg
+        
+        # 長文の場合は分割して返す
+        return self.event_context.split_long_message(msg)
