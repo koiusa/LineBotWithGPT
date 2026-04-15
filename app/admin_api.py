@@ -3,7 +3,6 @@ debugpy.listen(("0.0.0.0", 5679))  # 任意のポート
 from flask import Flask, request, jsonify
 import os
 import json
-import yaml
 import psycopg2
 import uuid
 from datetime import datetime
@@ -12,7 +11,7 @@ load_dotenv()  # .envファイルを自動ロード
 from database.system_postgres import SystemPostgres
 
 ADMIN_SETTINGS_FILE = os.environ.get("ADMIN_SETTINGS_FILE", "/app/admin_settings.json")
-CONFIG_YML_PATH = os.environ.get("CONFIG_YML_PATH", "/app/config.yml")
+STICKER_COMMAND_PATH = os.environ.get("STICKER_COMMAND_PATH", "/app/stickercommand.json")
 
 def load_settings():
     if os.path.exists(ADMIN_SETTINGS_FILE):
@@ -195,8 +194,8 @@ def manage_history(channel_id):
 @app.route("/api/stickercommands", methods=["GET"])
 def get_sticker_commands():
     try:
-        with open(CONFIG_YML_PATH, "r", encoding="utf-8") as f:
-            data = yaml.safe_load(f)
+        with open(STICKER_COMMAND_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
