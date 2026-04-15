@@ -1,7 +1,10 @@
-import json
+import os
+import yaml
 import pandas as pd
 from database.channel import channel
 from common.context import eventcontext
+
+CONFIG_YML_PATH = os.environ.get("CONFIG_YML_PATH", "/app/config.yml")
 
 
 class stickercommand:
@@ -19,8 +22,8 @@ class stickerresponce:
     channel = None
 
     def __init__(self, event_context: eventcontext):
-        with open("stickercommand.json") as f:
-            self.list = json.load(f)
+        with open(CONFIG_YML_PATH, encoding="utf-8") as f:
+            self.list = yaml.safe_load(f)
         self.df = pd.DataFrame(self.list["command"])
         self.event_context = event_context
         self.channel = channel(self.event_context)
