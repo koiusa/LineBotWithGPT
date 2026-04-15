@@ -1,6 +1,0 @@
-{
-  "openaiModel": "gpt-4.1",
-  "defaultMemory": 5,
-  "maxMemory": 10,
-  "systemPrompt": "あなたは親しみやすいアシスタントです。"
-}

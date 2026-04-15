@@ -10,24 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()  # .envファイルを自動ロード
 from database.system_postgres import SystemPostgres
 
-ADMIN_SETTINGS_FILE = os.environ.get("ADMIN_SETTINGS_FILE", "/app/admin_settings.json")
 STICKER_COMMAND_PATH = os.environ.get("STICKER_COMMAND_PATH", "/app/stickercommand.json")
-
-def load_settings():
-    if os.path.exists(ADMIN_SETTINGS_FILE):
-        with open(ADMIN_SETTINGS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    # デフォルト値
-    return {
-        "openaiModel": os.getenv("OPENAI_MODEL", "gpt-4.1"),
-        "defaultMemory": 5,
-        "maxMemory": 10,
-        "systemPrompt": "デフォルトのシステムプロンプトです。"
-    }
-
-def save_settings(data):
-    with open(ADMIN_SETTINGS_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
 
 def get_db_connection():
     return psycopg2.connect(
@@ -47,7 +30,7 @@ def api_settings():
         return jsonify(system.get_system_prompt_json())
     elif request.method == "PUT":
         data = request.json
-        save_settings(data)
+        SystemPostgres().add_system_prompt(data)
         return jsonify({"ok": True})
 
 @app.route("/api/test-connection", methods=["POST"])
