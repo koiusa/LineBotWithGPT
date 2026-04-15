@@ -6,6 +6,7 @@ import hashlib
 from flask import url_for
 from database.channel import channel
 from database.histoly_postgres import HistolyPostgres
+from database.system_postgres import SystemPostgres
 from linebot.models import (TextSendMessage)
 from common.context import eventcontext
 
@@ -67,8 +68,9 @@ class imageresponce:
         prompt = self.histoly.to_prompt(
             conversation, self.current.get("prompt"))
         client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        model = SystemPostgres().get_system_prompt_value("openaiModel") or const.OPENAI_MODEL
         completion = client.chat.completions.create(
-            model=const.OPENAI_MODEL,
+            model=model,
             messages=prompt,
             max_tokens=1500  # 長文対応のために増加
         )

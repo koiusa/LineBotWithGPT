@@ -18,7 +18,7 @@ def load_settings():
             return json.load(f)
     # デフォルト値
     return {
-        "openaiModel": "gpt-4.1",
+        "openaiModel": os.getenv("OPENAI_MODEL", "gpt-4.1"),
         "defaultMemory": 5,
         "maxMemory": 10,
         "systemPrompt": "デフォルトのシステムプロンプトです。"
